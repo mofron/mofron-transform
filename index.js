@@ -66,7 +66,7 @@ module.exports = {
                 set(x,y,z);
                 return;
             }
-            let trans_val = translate_get(trans);
+            let trans_val = get(trans);
             if ( (null === trans_val[0]) &&
                  (null === trans_val[1]) &&
                  (null === trans_val[2]) ) {
