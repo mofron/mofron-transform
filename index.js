@@ -10,17 +10,22 @@ module.exports = {
         try {
             let set = (sx,sy,sz) => {
                 try {
+		    let set_val = null;
                     if ((undefined !== sx) && (undefined !== sy) && (undefined !== sz)) {
-                        cmp.style({ "transform" : "translate3d("+ sx +","+ sy +")" });
+                        set_val = "translate3d("+ sx +","+ sy +")";
                     } if ((undefined !== sx) && (undefined !== sy)) {
-                        cmp.style({ "transform" : "translate("+ sx +","+ sy +")" });
+		        set_val = "translate("+ sx +","+ sy +")";
                     } else if (undefined !== sx) {
-                        cmp.style({ "transform" : "translateX("+ sx +")" });
+                        set_val = "translateX("+ sx +")";
                     } else if (undefined !== sy) {
-                        cmp.style({ "transform" : "translateY("+ sy +")" });
+                        set_val = "translateY("+ sy +")";
                     } else {
-                        cmp.style({ "transform" : "translateZ("+ sz +")" });
+                        set_val = "translateZ("+ sz +")";
                     }
+                    cmp.style({
+                        "transform"         : set_val,
+			"-webkit-transform" : set_val
+		    });
                 } catch (e) {
                     console.error(e.stack);
                     throw e;
