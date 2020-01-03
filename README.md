@@ -1,2 +1,2 @@
-# mofron-transform
- css transform util functions for mofron
+# mofron-util-transform
+ css transform setter functions for mofron
