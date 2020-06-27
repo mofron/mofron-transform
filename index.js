@@ -1,20 +1,16 @@
 /**
  * @file mofron-transform/index.js
  * @brief css transform util functions for mofron
- * @author simparts
+ * @license MIT
  */
 
-if (undefined !== mofron.util.component.translate) {
-    return;
-}
-
-mofron.util.component.translate = (cmp, x, y, z) => {
+module.exports = (prm, x, y, z) => {
     try {
         let set = (sx,sy,sz) => {
             try {
 	        let set_val = null;
                 if ((undefined !== sx) && (undefined !== sy) && (undefined !== sz)) {
-                    set_val = "translate3d("+ sx +","+ sy +")";
+                    set_val = "translate3d("+ sx +","+ sy + "," + sz + ")";
                 } if ((undefined !== sx) && (undefined !== sy)) {
 		    set_val = "translate("+ sx +","+ sy +")";
                 } else if (undefined !== sx) {
@@ -24,10 +20,7 @@ mofron.util.component.translate = (cmp, x, y, z) => {
                 } else {
                     set_val = "translateZ("+ sz +")";
                 }
-                cmp.style({
-                    "transform"         : set_val,
-                    "-webkit-transform" : set_val
-		});
+                prm.style({ "transform" : set_val }, { bpref : true });
             } catch (e) {
                 console.error(e.stack);
                 throw e;
@@ -36,26 +29,21 @@ mofron.util.component.translate = (cmp, x, y, z) => {
             
 	let get = (gprm) => {
 	    try {
-                if (-1 === gprm.indexOf("translate")) {
-                    return [null,null,null];
+	        if (-1 !== gprm.indexOf("translate3d")) {
+		    return gprm.substring("translate3d".length-1, gprm.length-1).split(',');
+                } else if (-1 === gprm.indexOf("translate")) {
+                    return [undefined, undefined, undefined];
                 }
                 let sp_prm  = gprm.split("translate")[1];
-                if ( ('X' === sp_prm[0]) ||
-                     ('Y' === sp_prm[0]) ||
-                     ('Z' === sp_prm[0]) ) {
-                    return sp_prm.substring(1, sp_prm.length-1);
+                if ('X' === sp_prm[0]) {
+		    return [sp_prm.substring(2, sp_prm.length-1), undefined, undefined];
+		} else if ('Y' === sp_prm[0]) {
+		    return [undefined, sp_prm.substring(2, sp_prm.length-1), undefined];
+                } else if ('Z' === sp_prm[0]) {
+                    return [undefined, undefined, sp_prm.substring(2, sp_prm.length-1)];
                 }
-                let sp_prm2 = sp_prm.split(',');
-                let ret = [];
-                for (let sp_idx=0; sp_idx < sp_prm2.length ;sp_idx++) {
-                    if (0 === sp_idx) {
-                        ret.push(sp_prm2[sp_idx].substr(1));
-                    } else if (sp_prm2.length-1 === sp_idx) {
-                        ret.push(sp_prm2[sp_idx].substring(0, sp_prm2[sp_idx].length-1));
-                    } else {
-                        ret.push(sp_prm[sp_idx]);
-                    }
-                }
+                let ret = gprm.substring("translate".length-1, gprm.length-1).split(',');
+                ret.push(undefined);
 		return ret;
             } catch (e) {
                 console.error(e.stack);
@@ -63,17 +51,12 @@ mofron.util.component.translate = (cmp, x, y, z) => {
             }
         }
             
-        let trans = cmp.style("transform");
+        let trans = prm.style("transform");
         if (null === trans) {
             set(x,y,z);
             return;
         }
         let trans_val = get(trans);
-        if ( (null === trans_val[0]) &&
-             (null === trans_val[1]) &&
-             (null === trans_val[2]) ) {
-            console.warn("overwrite transform");
-        }
         /* set translate */
         set(
             (undefined !== x) ? x : trans_val[0],
